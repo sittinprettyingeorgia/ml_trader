@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <title>{{ title }}</title>
+  <meta name="description" content="Smart Trader."/>
+  <meta name="HandheldFriendly" content="True"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta property="og:image:width" content="1000"/>
+  <meta property="og:image:height" content="523"/>
+  <meta name="theme-color" content="#5eb9d7"/>
+    <link href="{{ url_for('static', filename='dist/css/dashboard.css') }}" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,500" rel="stylesheet"/>
+  {% block pagestyles %}{% endblock %}
+</head>
+
+<body class="{{ template }}" onload="getGraph()">
+<div id="main-container">
+    <div id="sidebar-container">
+        <h1 id="logo" class="side-item">Smart Trader</h1>
+        <div id="sidebar-list" class="wrapper side-item">
+            <h1>{{ current_user.username }}'s Stock List</h1>
+            <ul id="stock-list">
+                {% for stock in stocks %}
+                    <li><a href="#" id="{{ stock.ticker }}" class="ticker"
+                           onclick="sendPlotJson(this.id, true);return false;" >{{ stock.ticker.upper() }}</a></li>
+                {% endfor %}
+                {% block content %}{% endblock %}
+            </ul>
+            <div id="add-delete-container" class="two-elem">
+                <button type="button" id="add-button" class="inner-item sidebar-button" onclick="addTicker()">Add</button>
+                <button type="button'" id="delete-button" class="inner-item sidebar-button" onclick="deleteTicker()">Delete</button>
+                <!--<button type="button'" id="search-button" class="inner-item sidebar-button" onclick="search()">Search</button>-->
+                <!--<button type="button" id="fav-button" class="inner-item sidebar-button" onclick="favTicker()">Favorite</button>-->
+            </div>
+            <div id="logout-search-container" class="two-elem">
+                <input type="text" id="search-bar" class="inner-item" placeholder="search...">
+                <a href="{{ url_for('home_bp.logout') }}" id="logout" class="inner-item">Log out</a>
+            </div>
+        </div>
+        <div id="data-controls" class="wrapper side-item">
+            <h1>Historical Data Controls</h1>
+            <div class="graph-button">
+                    <button class="drop-button sidebar-button" onclick="sendPlotJson();return false">Graph Data</button>
+            </div>
+            <div id="checkbox">
+                <p>Y Variables</p>
+                <div id="check-row1" class="check-row">
+                    <input type="checkbox" id="Volume" class="variables" name="volume" onclick="restrictVars(this.id)">
+                    <label for="volume">volume</label><br>
+                    <input type="checkbox" id="Open" class="variables" name="open" onclick="restrictVars(this.id)">
+                    <label for="open">open</label>
+                    <input type="checkbox" id="Close" class="variables" name="close" onclick="restrictVars(this.id)">
+                    <label for="close">close</label>
+                </div>
+                <div id="check-row2" class="check-row">
+                    <input type="checkbox" id="High" class="variables" name="high" onclick="restrictVars(this.id)">
+                    <label for="high">high</label>
+                    <input type="checkbox" id="Low" class="variables" name="low" onclick="restrictVars(this.id)">
+                    <label for="low">low</label>
+                </div>
+            </div>
+            <div id="checkbox">
+                <p>Graph Type</p>
+                <div id="check-row1" class="check-row">
+                        <input type="checkbox" id="Tick" class="graph-types" name="Tick" onclick="restrict(this.id)">
+                        <label for="Tick">Tick</label><br>
+                        <input type="checkbox" id="Hist" class="graph-types" name="Hist" onclick="restrict(this.id)">
+                        <label for="Hist">Hist</label>
+                </div>
+                <div id="check-row2" class="check-row">
+                        <input type="checkbox" id="Scatter" class="graph-types" name="Scatter" onclick="restrict(this.id)">
+                        <label for="Scatter">Scatter</label>
+                        <!--<input type="checkbox" id="Pie" class="graph-types" name="Pie" onclick="restrict(this.id)">
+                        <label for="Pie">Pie</label>-->
+                </div>
+            </div>
+        </div>
+        <div id="model-controls" class="wrapper side-item">
+            <h1>Help</h1>
+            <p>A.) To add/delete a ticker type it in the search box and click the appropriate button.
+                The Stock list can display five stocks at a time.</p>
+            <p>B.) Historical data can display a maximum of two Y variables at a time and Historical Data Controls will
+            be applied to the ticker currently in the data visualizer.</p>
+            <p>C.) Model controls consist of ("Create Model", "Display Model Efficacy", and "Predict Tomorrow's Price"</p>
+
+        </div>
+    </div>
+    <div id="data-container" class="wrapper">
+        <div class="pref">
+            <h1 id="data-title">{{ currTicker }} Data Visualizer</h1>
+            <button id="create-model" class="sidebar-button" onclick="createModel()">Create Model</button>
+            <button id="compare-model" class="sidebar-button" onclick="graphModel()">Display Model Efficacy</button>
+            <button id="predict-model" class="sidebar-button" onclick="predictPrice()">Predict Tomorrow's Price</button>
+            <p id ="predicted-price" class="predicted-price"></p>
+            <p id="model-score" class="model-score"></p>
+            <p id="var1-mode" class="summ"></p>
+            <p id="var1-median" class="summ"></p>
+            <p id="var1-mean" class="summ"></p>
+            <p id="var2-mode" class="summ"></p>
+            <p id="var2-median" class="summ"></p>
+            <p id="var2-mean" class="summ"></p>
+        </div>
+        <div id="data-visual-container">
+            <img id="data-visual" src="" >
+        </div>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='dist/js/main.min.js') }}"></script>
+{% block additionalscripts %}{% endblock %}
+</body>
+
+</html>
